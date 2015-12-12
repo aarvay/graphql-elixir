@@ -18,7 +18,7 @@ First, add GraphQL to your `mix.exs` dependencies:
 
 ```elixir
 defp deps do
-  [{:graphql, "~> 0.0.5"}]
+  [{:graphql, "~> 0.0.8"}]
 end
 ```
 
@@ -38,19 +38,18 @@ defmodule TestSchema do
     %GraphQL.Schema{
       query: %GraphQL.ObjectType{
         name: "RootQueryType",
-        fields: [
-          %GraphQL.FieldDefinition{
-            name: "greeting",
+        fields: %{
+          greeting: %{
             type: "String",
-            resolve: &greeting/1,
+            resolve: &TestSchema.greeting/3
           }
-        ]
+        }
       }
     }
   end
 
-  def greeting(name: name), do: "Hello, #{name}!"
-  def greeting(_), do: greeting(name: "world")
+  def greeting(_, %{name: name}, _), do: "Hello, #{name}!"
+  def greeting(_, _, _), do: "Hello, world!"
 end
 ```
 
@@ -68,8 +67,14 @@ This is a work in progress, right now here's what is done:
 - [x] Parser for GraphQL (including Type definitions)
 - [x] AST matching the `graphql-js` types as closely as possible
 - [x] Schema definition
-- [WIP] Query execution
-- [WIP] Query validation
+- [ ] Query execution
+  - [x] Scalar types
+  - [x] Arguments
+  - [x] Multiple forms of resolution
+  - [ ] Complex types (List, Object, etc)
+  - [ ] Fragments in queries
+  - [ ] Extract variable values
+- [ ] Query validation
 - [ ] Introspection
 
 ## Resources
@@ -85,6 +90,10 @@ Some resources on using leex and yecc:
 
 * http://relops.com/blog/2014/01/13/leex_and_yecc/
 * http://andrealeopardi.com/posts/tokenizing-and-parsing-in-elixir-using-leex-and-yecc/
+
+The Execution logic follows the [GraphQL JS Reference Implementation](https://github.com/graphql/graphql-js) pretty closely, as does the module structure of the project. Not to mention the naming of files and concepts.
+
+If you spot anything that isn't following Elixir conventions though, that's a mistake. Please let us know by opening an issue or a PR and we'll fix it.
 
 ## Developers
 
@@ -114,6 +123,8 @@ however if that PR has been merged then just grab the latest version of the plug
 ## Contributing
 
 We actively welcome pull requests, bug reports, feedback, issues, questions. Come and chat in the [#erlang channel on Slack](https://graphql-slack.herokuapp.com/)
+
+If you're planning to implement anything major, please let us know before you get too far so we can make sure your PR will be as mergable as possible. Oh, and don't forget to write tests.
 
 ## License
 
